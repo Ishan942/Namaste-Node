@@ -1,0 +1,20 @@
+{
+  "name": "devtinderbackend",
+  "version": "1.0.0",
+  "description": "backend for dev tinder project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "keywords": [
+    "nodejs",
+    "expressjs"
+  ],
+  "author": "Ishan Sirdeshpande",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
