@@ -23,8 +23,19 @@ app.post("/admin/deletUser", (req, res) => {
     res.send("USER DELETED SUCCESSFULLY");
 })
 
+app.get("/queryUser", (req, res) => {
+    // http://localhost:3000/queryUser?name=Ishan
+    const queryParams = req.query;
+    console.log(queryParams);
+    res.send("Search Result");
+})
 
 
+app.get("/reqParms/:userId", (req, res) => {
+    // http://localhost:3000/reqParms/123
+    const userId = req.params.userId;
+    res.send(`I am sending the data for user ${userId}`);
+})
 app.listen(3000, () => {
     console.log("server running now");
 });
