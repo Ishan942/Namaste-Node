@@ -9,6 +9,11 @@ app.get("/user", (req, res, next) => {
 })
 
 app.get("/user", (req, res, next) => {
+    console.log("this does not throw an error");
+    res.send("this is response that postman will show does not go to the next request handler ");
+})
+
+app.get("/user", (req, res, next) => {
     console.log("this is the second method call");
     next();
     console.log("this throws error here");
