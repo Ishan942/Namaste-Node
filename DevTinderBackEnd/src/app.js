@@ -3,20 +3,16 @@ const express = require('express');
 const app = express();
 
 // this will catch all user requets nothing will got to get post delete
-app.use("/user", (req,res)=> {
-    res.send("All request are sent here");
+app.get("/user", (req, res, next) => {
+    console.log("this is the first method called");
+    next();
 })
 
-app.get("/user", (req,res)=> {
-    res.send("User Data Feteched");
-})
-
-app.post("/user", (req,res)=> {
-    res.send("User created and added to database");
-})
-
-app.delete("/user", (req,res)=> {
-    res.send("USER deleted successfully");
+app.get("/user", (req, res, next) => {
+    console.log("this is the second method call");
+    next();
+    console.log("this throws error here");
+    // this searches for next matching route but it does not find one so throws error on postman
 })
 
 app.listen(3000, () => {
