@@ -36,6 +36,28 @@ app.get("/reqParms/:userId", (req, res) => {
     const userId = req.params.userId;
     res.send(`I am sending the data for user ${userId}`);
 })
+
+app.get("/errorHandleWay1", (req, res) => {
+    try {
+        throw new Error("Uh oh");
+        res.send("This does not execute");
+    } catch {
+        res.status(500).send("Something Went Wrong");
+    }
+})
+
+app.get("/errorHandleWay2", (req, res, next) => {
+  throw new Error("this throws an error");
+  res.send("This does not execute");
+});
+
+app.use("/",  (err,req, res, next) => {
+    console.log("this handles error 2");
+  if (err) {
+    res.status(500).send("Something Went Wrong");
+  }
+});
+
 app.listen(3000, () => {
     console.log("server running now");
 });
