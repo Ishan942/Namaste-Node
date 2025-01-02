@@ -1,24 +1,16 @@
 const express = require('express');
 
 const app = express();
-
+// express goes on checking every regex till it does not send any response back to server , if it finds a matching handler but it does not send any 
+// response back then also express goes on matching if the handler has next method in it if it does not then the request hangs till time outs
 // this will catch all user requets nothing will got to get post delete
 app.get("/user", (req, res, next) => {
     console.log("this is the first method called");
-    next();
+    // this request will hang till timeout occurs
+    // no error on postman or the console
 })
 
-app.get("/user", (req, res, next) => {
-    console.log("this does not throw an error");
-    res.send("this is response that postman will show does not go to the next request handler ");
-})
 
-app.get("/user", (req, res, next) => {
-    console.log("this is the second method call");
-    next();
-    console.log("this throws error here");
-    // this searches for next matching route but it does not find one so throws error on postman
-})
 
 app.listen(3000, () => {
     console.log("server running now");
