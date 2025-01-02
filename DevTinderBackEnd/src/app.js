@@ -8,6 +8,10 @@ app.get("/user", (req, res, next) => {
     console.log("this is the first method called");
     // this request will hang till timeout occurs
     // no error on postman or the console
+});
+
+app.get("/user", (req, res) => {
+    console.log("this request also hangs");
 })
 
 
