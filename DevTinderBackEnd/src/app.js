@@ -18,7 +18,7 @@ app.post("/signUp",async (req, res) => {
     }
 })
 
-app.get("/getUser",async (req, res) => {
+app.get("/user",async (req, res) => {
     const userEmail = req.body.emailId;
     console.log(userEmail);
     try {
@@ -29,7 +29,7 @@ app.get("/getUser",async (req, res) => {
     }
 });
 
-app.get("/getAll", async (req, res) => {
+app.get("/feed", async (req, res) => {
     try {
         const allUsers = await User.find({});
         res.send(allUsers);
@@ -38,6 +38,16 @@ app.get("/getAll", async (req, res) => {
     }
 })
 
+app.delete("/user", async (req, res) => {
+    try {
+        const userId= req.body.userId;
+        console.log(userId);
+        await User.findOneAndDelete({_id: userId});
+        res.send("User Deleted Successfully");
+    } catch(err) {
+        res.status(404).send("Something went wrong");
+    }
+});
 
 connectDB().then(() => {
     console.log("DATABASE CONNECTED");
