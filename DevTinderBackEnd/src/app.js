@@ -4,21 +4,37 @@ const User = require("./models/users");
 
 const app = express();
 
-app.post("/signUp",async (req, res) => {
+app.use(express.json());
 
-    const user = new User({
-        firstName: "Ishan",
-        lastName: "Sirdeshpande",
-        gender: "male",
-        password: "IshanPW",
-        age: 17
-    });
+app.post("/signUp",async (req, res) => {
+    console.log(req.body);
+    const user = new User(req.body);
     try {
         await user.save();
         res.send("User Saved to Database");
     } catch {
         //good to keep db operations in try catch block
         res.status(400).send("Error Adding User TO DB");
+    }
+})
+
+app.get("/getUser",async (req, res) => {
+    const userEmail = req.body.emailId;
+    console.log(userEmail);
+    try {
+        const user = await User.find({emailId: userEmail});
+        res.send(user);
+    } catch (error) {
+        res.status(404).send("Something went wrong");
+    }
+});
+
+app.get("/getAll", async (req, res) => {
+    try {
+        const allUsers = await User.find({});
+        res.send(allUsers);
+    } catch (error) {
+        res.status(404).send("Something went wrong");
     }
 })
 
