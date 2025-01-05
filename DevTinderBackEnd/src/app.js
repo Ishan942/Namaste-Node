@@ -12,9 +12,9 @@ app.post("/signUp",async (req, res) => {
     try {
         await user.save();
         res.send("User Saved to Database");
-    } catch {
+    } catch(err) {
         //good to keep db operations in try catch block
-        res.status(400).send("Error Adding User TO DB");
+        res.status(400).send("Error Adding User TO DB"+ err.message);
     }
 })
 
@@ -48,6 +48,25 @@ app.delete("/user", async (req, res) => {
         res.status(404).send("Something went wrong");
     }
 });
+
+app.patch("/user/:userId", async (req, res) => {
+    const userId = req.params?.userId;
+    const data = req.body.data;
+    try {
+        const ALLOWED_UPDATES = ["firstName", "age", "gender", "photoUrl", "skills"];
+        const shouldAllowUpdate = Object.keys(data).every((k) => ALLOWED_UPDATES.includes(k));
+        if(!shouldAllowUpdate) {
+            throw new Error("Not Allowed to Update")
+        }
+        if(data?.skills?.length > 10) {
+            throw new Error("Not Allowed To Update More than 10 Skills");
+        }
+        const beforeUpdateValue = await User.findByIdAndUpdate(userId, data, {returnDocument: "before", runValidators: true});
+        res.send("User Updated Successfully");
+    } catch (err) {
+        res.status(404).send(err.message);
+    }
+})
 
 connectDB().then(() => {
     console.log("DATABASE CONNECTED");
