@@ -1,6 +1,8 @@
 const express = require('express');
 const {connectDB} = require("./config/database");
 const User = require("./models/users");
+const {validateSignupData} = require("./utils/validation");
+const bcrypt = require("bcrypt");
 
 const app = express();
 
@@ -8,12 +10,20 @@ app.use(express.json());
 
 app.post("/signUp",async (req, res) => {
     console.log(req.body);
-    const user = new User(req.body);
     try {
+        validateSignupData(req);
+        const passwordHash = await bcrypt.hash(req.body.password, 10);
+        const {firstName, lastName, password, emailId} = req.body;
+        const user = new User({
+            firstName,
+            lastName,
+            password: passwordHash,
+            emailId
+        });
+        // only allow four fields while signup rest fields will be ignored in this way
         await user.save();
         res.send("User Saved to Database");
     } catch(err) {
-        //good to keep db operations in try catch block
         res.status(400).send("Error Adding User TO DB"+ err.message);
     }
 })

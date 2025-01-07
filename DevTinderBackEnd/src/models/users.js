@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validators = require("validator");
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -22,7 +23,12 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        validate(value) {
+            if(!validators.isStrongPassword(value)) {
+                throw new Error("Password not Strong Enough");
+            }
+        }
     },
     emailId: {
         type: String,
@@ -30,14 +36,24 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         trim: true,
         index: true,
-        unique: true
+        unique: true,
+        validate(value) {
+            if(!validators.isEmail(value)) {
+                throw new Error("Invalid Email" + value);
+            }
+        }
     },
     skills: {
         type: [String]
     },
     photoUrl: {
         type: String,
-        default: "https://cdn-icons-png.flaticon.com/512/21/21104.png"
+        default: "https://cdn-icons-png.flaticon.com/512/21/21104.png",
+        validate(value) {
+            if(!validators.isURL(value)) {
+                throw new Error("Invalid URL" + value);
+            }
+        }
     }
 }, {timestamps: true})
 
