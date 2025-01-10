@@ -3,16 +3,14 @@ const {connectDB} = require("./config/database");
 const User = require("./models/users");
 const {validateSignupData} = require("./utils/validation");
 const bcrypt = require("bcrypt");
-const jwtToken = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-
+const {userAuth} = require("./middlewares/auth")
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
 
 app.post("/signUp",async (req, res) => {
-    console.log(req.body);
     try {
         validateSignupData(req);
         const passwordHash = await bcrypt.hash(req.body.password, 10);
@@ -38,12 +36,11 @@ app.post("/login",async (req, res) => {
         if(!user) {
             throw new Error("Invalid credentials");
         }
-        console.log(password, user.password);
-        const isValidPassword = await  bcrypt.compare(password, user.password);
+        const isValidPassword = await  user.validatePassword(password);
         if(!isValidPassword) {
             throw new Error("Invalid credentials");
         } else {
-            const token = await jwtToken.sign({_id: user._id}, 'thisIsMyPrivateKey');
+            const token = await user.getJwt();
             res.cookie('userCookie', token);
             res.send("Log in successful");
         }
@@ -53,23 +50,23 @@ app.post("/login",async (req, res) => {
     }
 })
 
-app.get("/user",async (req, res) => {
+app.get("/user",userAuth, async (req, res) => {
     try {
-        const token = req.cookies.userCookie;
-        if(!token) {
-            throw new Error("Something went wrong, Login again");
-        }
-        const userId = jwtToken.verify(token, 'thisIsMyPrivateKey')
-        const user = await User.find({_id: userId});
-        if(!user) {
-            throw new Error("Invalid Cookie");
-        }
-        res.send(user);
+        res.send(req.user);
     } catch (error) {
         res.status(400).send("Error Validating User: "+ error.message);
     }
 });
 
+app.post("/sendConnectionRequest",userAuth,  async (req, res) => {
+    try{
+        const fName = req.user.firstName;
+        console.log("Connection request sent");
+        res.send(fName+ " sent a connection request");
+    } catch(error) {
+        res.status(400).send("Error Validating User: "+ error.message);
+    }
+})
 app.get("/feed", async (req, res) => {
     try {
         const allUsers = await User.find({});
@@ -82,7 +79,6 @@ app.get("/feed", async (req, res) => {
 app.delete("/user", async (req, res) => {
     try {
         const userId= req.body.userId;
-        console.log(userId);
         await User.findOneAndDelete({_id: userId});
         res.send("User Deleted Successfully");
     } catch(err) {
