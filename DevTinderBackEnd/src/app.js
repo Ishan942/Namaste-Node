@@ -3,10 +3,13 @@ const {connectDB} = require("./config/database");
 const User = require("./models/users");
 const {validateSignupData} = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const jwtToken = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signUp",async (req, res) => {
     console.log(req.body);
@@ -40,6 +43,8 @@ app.post("/login",async (req, res) => {
         if(!isValidPassword) {
             throw new Error("Invalid credentials");
         } else {
+            const token = await jwtToken.sign({_id: user._id}, 'thisIsMyPrivateKey');
+            res.cookie('userCookie', token);
             res.send("Log in successful");
         }
     }
@@ -49,13 +54,19 @@ app.post("/login",async (req, res) => {
 })
 
 app.get("/user",async (req, res) => {
-    const userEmail = req.body.emailId;
-    console.log(userEmail);
     try {
-        const user = await User.find({emailId: userEmail});
+        const token = req.cookies.userCookie;
+        if(!token) {
+            throw new Error("Something went wrong, Login again");
+        }
+        const userId = jwtToken.verify(token, 'thisIsMyPrivateKey')
+        const user = await User.find({_id: userId});
+        if(!user) {
+            throw new Error("Invalid Cookie");
+        }
         res.send(user);
     } catch (error) {
-        res.status(404).send("Something went wrong");
+        res.status(400).send("Error Validating User: "+ error.message);
     }
 });
 
