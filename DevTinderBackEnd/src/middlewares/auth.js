@@ -14,17 +14,18 @@ const adminAuth = (req ,res, next) => {
 
 const userAuth = async (req ,res, next) => {
     try {
-        const {userCookie} = req.cookies;
-        if(!userCookie) {
+        const {token} = req.cookies;
+        if(!token) {
             throw new Error("token not found");
         }
-        const id = await jsonwebtoken.verify(userCookie, 'thisIsMyPrivateKey');
+        const id = await jsonwebtoken.verify(token, 'thisIsMyPrivateKey');
         console.log(req.cookies);
         const user = await User.findOne({_id: id});
         if(!user) {
             throw new Error("Invalid Token");
         }
         req.user = user;
+        console.log("user");
         next();
     } catch(error) {
         res.status(400).send("Error Validating User: "+ error.message);

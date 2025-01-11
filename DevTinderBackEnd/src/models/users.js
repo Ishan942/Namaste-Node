@@ -56,6 +56,10 @@ const userSchema = new mongoose.Schema({
                 throw new Error("Invalid URL" + value);
             }
         }
+    },
+    about: {
+        type: String,
+        default: "This is the deafult about value"
     }
 }, {timestamps: true})
 

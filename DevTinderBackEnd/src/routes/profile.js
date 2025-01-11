@@ -1,31 +1,50 @@
 const express = require("express");
-const {userAuth} = require("../middlewares/auth")
+const { userAuth } = require("../middlewares/auth");
+const { validateEditProfileData } = require("../utils/validation");
 const User = require("../models/users");
+const bcrypt = require("bcrypt");
+const validators = require("validator");
 
 const profileRouter = express.Router();
 
-profileRouter.get("/profile",userAuth, async (req, res) => {
+profileRouter.get("/profile/view", userAuth, async (req, res) => {
     try {
+        console.log(req.user);
         res.send(req.user);
     } catch (error) {
-        res.status(400).send("Error Validating User: "+ error.message);
+        res.status(400).send("Error Validating User: " + error.message);
     }
 });
 
-profileRouter.patch("/profile/:userId", async (req, res) => {
-    const userId = req.params?.userId;
-    const data = req.body.data;
+profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     try {
-        const ALLOWED_UPDATES = ["firstName", "age", "gender", "photoUrl", "skills"];
-        const shouldAllowUpdate = Object.keys(data).every((k) => ALLOWED_UPDATES.includes(k));
-        if(!shouldAllowUpdate) {
+        if (!validateEditProfileData(req)) {
             throw new Error("Not Allowed to Update")
         }
-        if(data?.skills?.length > 10) {
-            throw new Error("Not Allowed To Update More than 10 Skills");
+        const loggedInUser = req.user;
+        Object.keys(req.body).forEach(key => loggedInUser[key] = req.body[key]);
+        await loggedInUser.save();
+        res.json({ message: `${loggedInUser.firstName} User Updated Successfully`, data: loggedInUser });
+    } catch (err) {
+        res.status(404).send(err.message);
+    }
+});
+
+profileRouter.patch("/profile/password", userAuth, async (req, res) => {
+    try {
+        const { oldPassword, newPassword } = req.body;
+        const user = req.user;
+        const isPasswordValid = await user.validatePassword(oldPassword);
+        if (!isPasswordValid) {
+            throw new Error("Invalid password");
         }
-        const beforeUpdateValue = await User.findByIdAndUpdate(userId, data, {returnDocument: "before", runValidators: true});
-        res.send("User Updated Successfully");
+        if(!validators.isStrongPassword(newPassword)) {
+            throw new Error("New Password Not Strong Enough");
+        }
+        const newHashedPassword = await bcrypt.hash(newPassword, 10);
+        user['password'] = newHashedPassword;
+        await user.save();
+        res.send("Password updated successfully");
     } catch (err) {
         res.status(404).send(err.message);
     }
@@ -33,10 +52,10 @@ profileRouter.patch("/profile/:userId", async (req, res) => {
 
 profileRouter.delete("/user", async (req, res) => {
     try {
-        const userId= req.body.userId;
-        await User.findOneAndDelete({_id: userId});
+        const userId = req.body.userId;
+        await User.findOneAndDelete({ _id: userId });
         res.send("User Deleted Successfully");
-    } catch(err) {
+    } catch (err) {
         res.status(404).send("Something went wrong");
     }
 });
