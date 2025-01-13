@@ -61,7 +61,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "This is the deafult about value"
     }
-}, {timestamps: true})
+}, {timestamps: true});
+
+userSchema.index({firstName: 1, lastName: 1});
 
 userSchema.methods.getJwt = async function () {
     const user = this;
