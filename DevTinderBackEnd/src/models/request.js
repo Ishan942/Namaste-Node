@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("../models/users");
+const { equals } = require("validator");
 
 const ConnectionRequestSchema = mongoose.Schema({
     fromUserId: {
@@ -19,6 +20,14 @@ const ConnectionRequestSchema = mongoose.Schema({
         }
     }
 }, { timestamps: true });
+
+ConnectionRequestSchema.pre("save", function (next) {
+    const connectionRequest = this;
+    if(connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
+        throw new Error("Bad Request can not send request to self");
+    }
+    next();
+})
 
 const ConnectionRequestModel = mongoose.model('ConnectionRequest', ConnectionRequestSchema);
 
