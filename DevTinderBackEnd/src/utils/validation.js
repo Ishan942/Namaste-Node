@@ -16,8 +16,6 @@ const validateSignupData = (req) => {
 const validateEditProfileData = (req) => {
     const ALLOWED_UPDATES = ["firstName", "lastName", "age", "gender", "photoUrl", "skills", "about"];
     const isUpdateAllowed = Object.keys(req.body).every((k) => ALLOWED_UPDATES.includes(k)) && !(req.body.skills?.length > 10);
-    console.log(Object.keys(req.body).every((k) => ALLOWED_UPDATES.includes(k)));
-    console.log(!(req.body.skills?.length > 10))
     return isUpdateAllowed;
 }
 module.exports = {validateSignupData, validateEditProfileData}

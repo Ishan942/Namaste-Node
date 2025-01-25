@@ -36,8 +36,33 @@ userRouter.get("/user/connections", userAuth, async(req, res) => {
         });
         res.json({data});
     } catch (error) {
-        res.status(400).send("Something went wrong");
+        res.status(400).send("Something went wrong ",error);
     }
 });
 
+userRouter.get("/feed", userAuth, async (req, res) => {
+    try{
+        const loggedInUser = req.user;
+
+        const connectionRequests = await ConnectionRequestModel.find({
+            $or: [{fromUserId: loggedInUser._id}, {toUserId: loggedInUser._id}]
+        }).select("toUserId fromUserId");
+        const hideUsers = new Set();
+        connectionRequests.forEach(connection => {
+            hideUsers.add(connection.fromUserId.toString());
+            hideUsers.add(connection.toUserId.toString());
+        });
+        const users = await User.find({
+            $and : [
+                {_id: {$nin: Array.from(hideUsers)}},
+                {_id: {$ne: loggedInUser._id}}
+            ]
+        }).select(ALLOWED_USER_FIELDS);
+
+        res.json({users: users});
+
+    } catch(error) {
+        res.status(400).json({message: error});
+    }
+})
 module.exports = userRouter;

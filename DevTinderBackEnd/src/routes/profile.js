@@ -9,7 +9,6 @@ const profileRouter = express.Router();
 
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
     try {
-        console.log(req.user);
         res.send(req.user);
     } catch (error) {
         res.status(400).send("Error Validating User: " + error.message);
