@@ -34,7 +34,7 @@ userRouter.get("/user/connections", userAuth, async(req, res) => {
             }
             return row.fromUserId;
         });
-        res.json({data});
+        res.json({data: data});
     } catch (error) {
         res.status(400).json({message: "Something Went Wrong " + error});
     }
@@ -67,7 +67,7 @@ userRouter.get("/feed", userAuth, async (req, res) => {
         .skip(toSkip)
         .limit(limit);
 
-        res.json({users: users});
+        res.json({data: users});
 
     } catch(error) {
         res.status(400).json({message: "Something Went Wrong " + error});
