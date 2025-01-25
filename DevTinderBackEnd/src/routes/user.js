@@ -14,7 +14,7 @@ userRouter.get("/user/request/recieved", userAuth, async (req, res) => {
         }).populate("fromUserId", ALLOWED_USER_FIELDS);
         res.json({data: requests})
     } catch (error) {
-        res.status(400).send("Something went wrong");
+        res.status(400).json({message: "Something Went Wrong " + error});
     }
 });
 
@@ -36,13 +36,19 @@ userRouter.get("/user/connections", userAuth, async(req, res) => {
         });
         res.json({data});
     } catch (error) {
-        res.status(400).send("Something went wrong ",error);
+        res.status(400).json({message: "Something Went Wrong " + error});
     }
 });
 
 userRouter.get("/feed", userAuth, async (req, res) => {
     try{
         const loggedInUser = req.user;
+        const page = req.query.page ?? 1;
+        const limit = req.query.limit ?? 10
+        const toSkip = (page - 1) * limit;
+        if(limit > 100) {
+            throw new Error("Cannot send that many users");
+        }
 
         const connectionRequests = await ConnectionRequestModel.find({
             $or: [{fromUserId: loggedInUser._id}, {toUserId: loggedInUser._id}]
@@ -57,12 +63,14 @@ userRouter.get("/feed", userAuth, async (req, res) => {
                 {_id: {$nin: Array.from(hideUsers)}},
                 {_id: {$ne: loggedInUser._id}}
             ]
-        }).select(ALLOWED_USER_FIELDS);
+        }).select(ALLOWED_USER_FIELDS)
+        .skip(toSkip)
+        .limit(limit);
 
         res.json({users: users});
 
     } catch(error) {
-        res.status(400).json({message: error});
+        res.status(400).json({message: "Something Went Wrong " + error});
     }
 })
 module.exports = userRouter;
