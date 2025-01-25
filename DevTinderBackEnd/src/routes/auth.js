@@ -19,7 +19,7 @@ authRouter.post("/signUp",async (req, res) => {
         });
         // only allow four fields while signup rest fields will be ignored in this way
         await user.save();
-        res.send("User Saved to Database");
+        res.json({message: "User Saved to Database"});
     } catch(err) {
         res.status(400).send("Error Adding User: "+ err.message);
     }
@@ -38,7 +38,7 @@ authRouter.post("/login",async (req, res) => {
         } else {
             const token = await user.getJwt();
             res.cookie('token', token);
-            res.send("Log in successful");
+            res.josn({ message: "Log in successful"});
         }
     }
     catch(error) {
@@ -50,7 +50,7 @@ authRouter.post("/logout", (req, res) => {
     res.cookie('token', null , {
         expires: new Date(Date.now())
     })
-    res.send("Logout Successful");
+    res.json({message: "Logout Successful"});
 });
 
 module.exports = authRouter;

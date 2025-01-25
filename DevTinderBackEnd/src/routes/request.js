@@ -79,7 +79,7 @@ requestRouter.post("/request/review/:status/:reqId", userAuth, async (req, res) 
             data: data
         });
     } catch(error) {
-        res.status(400).send("Error: "+ error.message);
+        res.status(400).json({message: "Something Went Wrong " + error});
     }
 
 });

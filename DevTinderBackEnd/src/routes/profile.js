@@ -9,9 +9,9 @@ const profileRouter = express.Router();
 
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
     try {
-        res.send(req.user);
+        res.json({data: req.user});
     } catch (error) {
-        res.status(400).send("Error Validating User: " + error.message);
+        res.status(400).json({message: "Something Went Wrong " + error});
     }
 });
 
@@ -24,8 +24,8 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
         Object.keys(req.body).forEach(key => loggedInUser[key] = req.body[key]);
         await loggedInUser.save();
         res.json({ message: `${loggedInUser.firstName} User Updated Successfully`, data: loggedInUser });
-    } catch (err) {
-        res.status(404).send(err.message);
+    } catch (error) {
+        res.status(400).json({message: "Something Went Wrong " + error});
     }
 });
 
@@ -43,9 +43,9 @@ profileRouter.patch("/profile/password", userAuth, async (req, res) => {
         const newHashedPassword = await bcrypt.hash(newPassword, 10);
         user['password'] = newHashedPassword;
         await user.save();
-        res.send("Password updated successfully");
-    } catch (err) {
-        res.status(404).send(err.message);
+        res.json({message: "Password updated successfully"});
+    } catch (error) {
+        res.status(400).json({message: "Something Went Wrong " + error});
     }
 });
 
@@ -53,9 +53,9 @@ profileRouter.delete("/user", async (req, res) => {
     try {
         const userId = req.body.userId;
         await User.findOneAndDelete({ _id: userId });
-        res.send("User Deleted Successfully");
-    } catch (err) {
-        res.status(404).send("Something went wrong");
+        res.josn({message: "User Deleted Successfully"});
+    } catch (error) {
+        res.status(400).json({message: "Something Went Wrong " + error});
     }
 });
 
