@@ -74,3 +74,4 @@ userRouter.get("/feed", userAuth, async (req, res) => {
     }
 })
 module.exports = userRouter;
+module.exports.ALLOWED_USER_FIELDS = ALLOWED_USER_FIELDS;

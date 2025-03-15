@@ -2,7 +2,7 @@ const express = require("express");
 const {validateSignupData} = require("../utils/validation");
 const bcrypt = require("bcrypt");
 const User = require("../models/users");
-
+const {ALLOWED_USER_FIELDS} = require("./user")
 
 const authRouter = express.Router();
 
@@ -27,6 +27,7 @@ authRouter.post("/signUp",async (req, res) => {
 
 authRouter.post("/login",async (req, res) => {
     try {
+        console.log(req.body);
         const {emailId, password} = req.body;
         const user = await User.findOne({emailId: emailId});
         if(!user) {
@@ -38,7 +39,7 @@ authRouter.post("/login",async (req, res) => {
         } else {
             const token = await user.getJwt();
             res.cookie('token', token);
-            res.josn({ message: "Log in successful"});
+            res.json({ message: "Log in successful", user: user});
         }
     }
     catch(error) {
