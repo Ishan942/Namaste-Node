@@ -15,7 +15,7 @@ const userAuth = async (req ,res, next) => {
     try {
         const {token} = req.cookies;
         if(!token) {
-            throw new Error("token not found");
+            return res.status(401).send("Token not found");
         }
         const id = await jsonwebtoken.verify(token, 'thisIsMyPrivateKey');
         const user = await User.findOne({_id: id});
