@@ -20,7 +20,7 @@ const Navbar = () => {
     }
     return (
         <>
-            <div className="navbar bg-base-300">
+            <div className="navbar bg-base-300 fixed">
                 <div className="flex-1">
                     <Link to="/" className="btn btn-ghost text-xl">🧑‍💻DevTinder</Link>
                 </div>
@@ -33,7 +33,7 @@ const Navbar = () => {
                                     <div className="w-10 rounded-full">
                                             <img
                                                 alt="Tailwind CSS Navbar component"
-                                                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                                                src={user.photoUrl}
                                             />
                                     </div>
                                 </div>

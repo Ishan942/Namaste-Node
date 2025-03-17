@@ -28,7 +28,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex justify-center my-10 ">
+    <div className="flex justify-center my-10 " style={{border: 'none'}}>
       <form onSubmit={handleSubmit} className="w-full max-w-xs p-4 border rounded-lg">
         <label className="form-control w-full max-w-xs">
           <div className="label">

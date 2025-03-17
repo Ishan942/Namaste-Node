@@ -24,9 +24,9 @@ export const Body = () => {
   }
   useEffect(() => {fetchUsers()}, []);
   return (
-    <div>
+    <div className='overflow-hidden'>
         <Navbar/>
-        <Outlet/>
+        <div className='mb-12 overflow-auto h-11/12 mt-16'><Outlet/></div>
         <Footer/>
     </div>
   )
