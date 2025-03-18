@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
 import { addUser } from "../utils/userSlice";
+import { addFeed } from "../utils/feedSlice";
 
 const Navbar = () => {
     const user = useSelector((store) => store.user);
@@ -13,6 +14,7 @@ const Navbar = () => {
         try {
             await axios.post(BASE_URL + '/logout',{}, {withCredentials: true});
             dispatch(addUser({}));
+            dispatch(addFeed({}))
             navigate("/login");
         } catch (error) {
             console.log(error);
@@ -20,20 +22,20 @@ const Navbar = () => {
     }
     return (
         <>
-            <div className="navbar bg-base-300 fixed">
+            <div className="navbar bg-base-300 fixed z-10">
                 <div className="flex-1">
                     <Link to="/" className="btn btn-ghost text-xl">🧑‍💻DevTinder</Link>
                 </div>
                 {user &&
                     <>
-                        <p className="mr-2">Welcome {user.firstName}</p>
+                        <p className="mr-2">{user.firstName ? 'Welcome' + user.firstName: ''}</p>
                         <div className="flex-none gap-2">
                             <div className="dropdown dropdown-end">
                                 <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar mr-3">
                                     <div className="w-10 rounded-full">
                                             <img
                                                 alt="Tailwind CSS Navbar component"
-                                                src={user.photoUrl}
+                                                src={user.photoUrl ?? 'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp'}
                                             />
                                     </div>
                                 </div>
@@ -50,6 +52,12 @@ const Navbar = () => {
                                     <li>
                                         <Link to="/">
                                             Feed
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/connections" className="justify-between">
+                                            Connections
+                                            <span className="badge">New</span>
                                         </Link>
                                     </li>
                                     <li onClick={handleLogout}><a>Logout</a></li>
