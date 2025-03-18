@@ -151,7 +151,7 @@ const UserProfileForm = ({ user }) => {
             <div className="h-6/12 mt-10">
                 <UserCard user={{ firstName, lastName, gender, about, skills, photoUrl }} />
             </div>
-            {showSuccessMessage && <div className="toast toast-top toast-center">
+            {showSuccessMessage && <div className="toast toast-top toast-center z-20">
                 <div className="alert alert-success h-10 flex justify-center align-middle">
                     <span>Profile Updated successfully.</span>
                 </div>
