@@ -14,7 +14,7 @@ const Navbar = () => {
         try {
             await axios.post(BASE_URL + '/logout',{}, {withCredentials: true});
             dispatch(addUser({}));
-            dispatch(addFeed({}))
+            dispatch(addFeed(null))
             navigate("/login");
         } catch (error) {
             console.log(error);

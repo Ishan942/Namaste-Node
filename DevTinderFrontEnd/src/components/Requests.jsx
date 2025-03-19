@@ -1,5 +1,5 @@
 import axios from 'axios'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BASE_URL } from '../utils/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import { addrequests, removerequests } from '../utils/requestSlice'
@@ -7,6 +7,7 @@ import { addrequests, removerequests } from '../utils/requestSlice'
 const requests = () => {
     const dispatch = useDispatch();
     const requests = useSelector(store => store.requests);
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
     const fetchrequests = async () => {
         try {
             const res = await axios.get(BASE_URL + '/user/request/recieved', { withCredentials: true });
@@ -21,6 +22,10 @@ const requests = () => {
         try {
             const res = await axios.post(`${BASE_URL}/request/review/${status}/${_id}`, {}, { withCredentials: true });
             dispatch(removerequests(_id));
+            setShowSuccessMessage(true);
+            setTimeout(() => {
+                setShowSuccessMessage(false)
+            }, 3000)
         } catch (error) {
             console.log(error);
         }
@@ -52,6 +57,11 @@ const requests = () => {
                     </div>
                 )
             })}
+             {showSuccessMessage && <div className="toast toast-top toast-center z-20">
+                <div className="alert alert-success h-10 flex justify-center align-middle">
+                    <span>Profile Updated successfully.</span>
+                </div>
+            </div>}
         </div>
     )
 }
