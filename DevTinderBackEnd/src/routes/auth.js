@@ -18,8 +18,10 @@ authRouter.post("/signUp",async (req, res) => {
             emailId
         });
         // only allow four fields while signup rest fields will be ignored in this way
-        await user.save();
-        res.json({message: "User Saved to Database"});
+        const saveduser = await user.save();
+        const token = await saveduser.getJwt();
+        res.cookie('token', token);
+        res.json({message: "User Saved to Database", user: saveduser});
     } catch(err) {
         res.status(400).send("Error Adding User: "+ err.message);
     }

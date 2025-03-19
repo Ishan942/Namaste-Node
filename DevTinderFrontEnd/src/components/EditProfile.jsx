@@ -7,7 +7,6 @@ import { addUser } from "../utils/userSlice";
 
 const UserProfileForm = ({ user }) => {
     const dispatch = useDispatch();
-    console.log(user);
     const [firstName, setFirstName] = useState(user?.firstName || "");
     const [lastName, setLastName] = useState(user?.lastName || "");
     const [gender, setGender] = useState(user?.gender || "Male");
